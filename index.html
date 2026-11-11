@@ -763,8 +763,95 @@
   <script>
     try { var t = localStorage.getItem('trk-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
+<style id="snapshot-css">
+/* ====== ΣΤΙΓΜΙΟΤΥΠΟ ΒΑΡΔΙΑΣ ====== */
+#snap-head, #snap-panel, #snap-bar { display:none; }
+body.snapshot-mode {
+  --bg:#ffffff; --panel:#ffffff; --panel-2:#f1f5f9; --ink:#0f172a; --text:#0f172a;
+  --muted:#475569; --accent:#0f766e; --border:#cbd5e1;
+  height:auto; min-height:0; overflow:auto; display:block; background:#cbd5e1; min-width:300mm;
+}
+body.snapshot-mode header,
+body.snapshot-mode .sidebar,
+body.snapshot-mode .dash-toolbar,
+body.snapshot-mode #rain-alert-banner { display:none !important; }
+body.snapshot-mode > #snap-head,
+body.snapshot-mode > #status-now-bar,
+body.snapshot-mode > #alerts-banner,
+body.snapshot-mode > .main {
+  width:281mm; margin-left:auto; margin-right:auto; box-sizing:border-box;
+}
+body.snapshot-mode > #snap-head {
+  display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;
+  margin-top:10px; padding:7px 14px; background:#fff; color:#0f172a;
+  border:1px solid #cbd5e1; border-bottom:2px solid #0f766e; font-size:0.78rem;
+}
+#snap-head .snap-title { font-size:1.05rem; font-weight:700; }
+#snap-head .snap-sub { color:#475569; font-size:0.72rem; }
+#snap-head .snap-sign { white-space:nowrap; color:#334155; }
+body.snapshot-mode #status-now-bar { background:#fff; border:1px solid #cbd5e1; border-top:none; }
+body.snapshot-mode #status-now-bar .sn-title { color:#0f766e; }
+body.snapshot-mode #status-now-bar .sn-item { background:#f8fafc; }
+body.snapshot-mode #status-now-bar .sn-item.ok { color:#15803d; border-color:#86efac; }
+body.snapshot-mode #status-now-bar .sn-item.warn { color:#b45309; border-color:#fcd34d; }
+body.snapshot-mode #status-now-bar .sn-item.danger { color:#b91c1c; border-color:#fca5a5; }
+body.snapshot-mode #status-now-bar .sn-item.info { color:#0369a1; border-color:#7dd3fc; }
+body.snapshot-mode #status-now-bar .sn-item.muted { color:#475569; }
+body.snapshot-mode > .main {
+  display:grid; grid-template-columns:1fr 88mm; gap:3mm; flex:none; height:auto; margin-top:3mm; margin-bottom:10px;
+}
+body.snapshot-mode #map { height:140mm; min-height:0; width:auto; border:1px solid #94a3b8; }
+body.snapshot-mode #snap-panel {
+  display:block; height:140mm; overflow:hidden; box-sizing:border-box; padding:2.5mm 3mm;
+  background:#fff; color:#0f172a; border:1px solid #94a3b8; font-size:0.74rem; line-height:1.35;
+}
+#snap-panel h3 { margin:0 0 4px; font-size:0.8rem; color:#0f766e; border-bottom:1px solid #cbd5e1; padding-bottom:2px; }
+#snap-panel h3.snap-h-layers { margin-top:8px; }
+#snap-alerts .al-item {
+  padding:4px 6px; margin:0 0 4px; border-radius:4px; border-left:4px solid #0f766e; background:#f1f5f9; font-size:0.72rem;
+}
+#snap-alerts .al-item.sev-red { border-left-color:#ef4444; }
+#snap-alerts .al-item.sev-orange { border-left-color:#f59e0b; }
+#snap-alerts .al-item.sev-yellow { border-left-color:#eab308; }
+#snap-alerts .al-item.sev-112 { border-left-color:#f43f5e; }
+#snap-alerts .al-meta { color:#475569; font-size:0.66rem; margin-top:1px; }
+#snap-alerts a { color:inherit; text-decoration:none; }
+#snap-alerts .snap-none { color:#475569; }
+#snap-alerts .snap-more { color:#475569; font-style:italic; margin:2px 0 4px; }
+#snap-layers { color:#334155; font-size:0.68rem; }
+body.snapshot-mode #snap-bar {
+  display:flex; position:fixed; top:10px; right:14px; z-index:5000; gap:8px; align-items:center;
+  padding:6px 8px; background:#0f172a; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.35);
+}
+#snap-bar span { color:#cbd5e1; font-size:0.72rem; margin:0 4px; }
+#snap-bar button { cursor:pointer; border:1px solid #334155; background:#1e293b; color:#e2e8f0; padding:6px 12px; border-radius:7px; font-size:0.78rem; }
+#snap-bar button.primary { background:#0f766e; border-color:#0f766e; color:#fff; font-weight:600; }
+@media print {
+  * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body.snapshot-mode { background:#fff !important; min-width:0; overflow:visible; }
+  body.snapshot-mode #snap-bar,
+  body.snapshot-mode .leaflet-control-zoom,
+  body.snapshot-mode .leaflet-control-layers { display:none !important; }
+  body.snapshot-mode > #snap-head { margin-top:0; }
+  body.snapshot-mode > .main { display:grid !important; margin-bottom:0; }
+  body.snapshot-mode #map { height:140mm !important; width:auto !important; }
+}
+</style>
 </head>
 <body>
+  <div id="snap-bar" role="toolbar" aria-label="Στιγμιότυπο βάρδιας">
+    <span>📸 Στιγμιότυπο βάρδιας — κάνε pan/zoom στον χάρτη όπως θέλεις</span>
+    <button type="button" class="primary" id="snap-print">🖨️ Εκτύπωση / PDF</button>
+    <button type="button" id="snap-refresh" title="Ανανέωση ώρας και alerts στο στιγμιότυπο">🔄</button>
+    <button type="button" id="snap-exit">✖ Έξοδος</button>
+  </div>
+  <div id="snap-head">
+    <div>
+      <div class="snap-title">📸 Στιγμιότυπο βάρδιας · Εικόνα κατάστασης</div>
+      <div class="snap-sub">Πολιτική Προστασία · Ν. Τρικάλων · <span id="snap-time"></span> · <span id="snap-data-time"></span></div>
+    </div>
+    <div class="snap-sign">Βάρδια: ____________ &nbsp; Σύνταξη: ________________</div>
+  </div>
   <header>
     <h1><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.5 28 7v8.5c0 7-5 12.2-12 14-7-1.8-12-7-12-14V7z" fill="#101820" stroke="#5eead4" stroke-width="1.8"/><path d="M9 19.5c2.2-3.8 4.2-3.8 6.4 0s4.2 3.8 7.6-2" fill="none" stroke="#5eead4" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="11.5" r="1.8" fill="#5eead4"/></svg><b style="font-weight:600">Dashboard</b> <span>Νομού Τρικάλων</span></h1>
     <div class="header-meta">
@@ -793,12 +880,19 @@
     <div id="map">
       <div id="rain-alert-banner" role="alert" title="Κλικ για απόκρυψη"></div>
     </div>
+    <section id="snap-panel" aria-label="Ενεργά alerts">
+      <h3>📢 Ενεργά alerts</h3>
+      <div id="snap-alerts"></div>
+      <h3 class="snap-h-layers">🗺️ Ενεργά επίπεδα χάρτη</h3>
+      <div id="snap-layers"></div>
+    </section>
     <aside class="sidebar">
 
       <div class="dash-toolbar">
         <input type="search" id="dash-search" placeholder="Αναζήτηση περιοχής / σταθμού / σημείου…" autocomplete="off" />
         <button type="button" class="primary" id="btn-critical" title="Radar, πρόγνωση 12ω, ΕΛΚΕΘΕ, πλημμύρα T=100">🚨 Μόνο κρίσιμα</button>
         <button type="button" id="btn-export-map" title="Εκτύπωση / αποθήκευση χάρτη">🖨️ Χάρτης</button>
+        <button type="button" id="btn-snapshot" title="Στιγμιότυπο βάρδιας: χάρτης + κατάσταση + ενεργά alerts σε μία σελίδα (εκτύπωση ή PDF)">📸 Στιγμιότυπο βάρδιας</button>
         <button type="button" id="btn-all-off" title="Απενεργοποίηση όλων των επιπέδων">✖ Όλα off</button>
       </div>
       <div id="search-results" role="listbox"></div>
@@ -1201,7 +1295,7 @@
            style="display:block;text-align:center;text-decoration:none;margin-bottom:6px">temperature.gr (τηλεμετρία) →</a>
         <a class="btn secondary" href="https://hydro-stations.hcmr.gr/wrf/?basin=PINIOS" target="_blank" rel="noopener"
            style="display:block;text-align:center;text-decoration:none;margin-bottom:6px">🌊 WRF-Hydro PINIOS →</a>
-        <button class="btn secondary" type="button" onclick="try{map.fitBounds(L.latLngBounds([[39.52,21.75],[39.90,22.62]]),{padding:[40,40]});}catch(e){}" style="margin-top:6px">📍 Εστίαση σε σταθμούς ΕΛΚΕΘΕ</button>
+        <button class="btn secondary" type="button" onclick="try{focusTrikala({maxZoom:10});}catch(e){}" style="margin-top:6px">📍 Εστίαση σε σταθμούς ΕΛΚΕΘΕ</button>
         <a class="btn secondary" href="https://hydro-stations.hcmr.gr/" target="_blank" rel="noopener"
            style="display:block;text-align:center;text-decoration:none">📋 Όλοι οι σταθμοί →</a>
         <div class="legend" style="margin-top:8px">
@@ -1285,11 +1379,19 @@ const OPS_POINTS = [{"name": "Γενικό Νοσοκομείο Τρικάλων
   </script>
   <script>
     // ========== MAP SETUP ==========
+    // Όρια Νομού Τρικάλων · ο χάρτης ανοίγει κεντραρισμένος στον νομό
+    const TRIKALA_BOUNDS = L.latLngBounds(
+      [39.356, 21.120], // SW
+      [39.901, 22.225]  // NE
+    );
+    const TRIKALA_MAX_BOUNDS = TRIKALA_BOUNDS.pad(0.12);
+    const TRIKALA_CENTER = TRIKALA_BOUNDS.getCenter(); // ~39.63, 21.67
+
     const map = L.map('map', {
       maxZoom: 17,
       minZoom: 8,
-      maxBounds: [[39.25, 21.04], [40.05, 22.70]],
-      maxBoundsViscosity: 0.9,
+      maxBounds: TRIKALA_MAX_BOUNDS,
+      maxBoundsViscosity: 1.0,
       preferCanvas: true,
       zoomSnap: 0.25,
       zoomDelta: 0.5,
@@ -1300,7 +1402,20 @@ const OPS_POINTS = [{"name": "Γενικό Νοσοκομείο Τρικάλων
       inertia: true,
       inertiaDeceleration: 2500,
       worldCopyJump: false
-    }).fitBounds([[39.40, 21.40], [39.90, 22.15]], { padding: [24, 24], maxZoom: 11 });
+    }).fitBounds(TRIKALA_BOUNDS, { padding: [28, 28], maxZoom: 10 });
+
+    function focusTrikala(opts) {
+      opts = opts || {};
+      try {
+        map.fitBounds(TRIKALA_BOUNDS, {
+          padding: opts.padding || [28, 28],
+          maxZoom: opts.maxZoom != null ? opts.maxZoom : 10,
+          animate: opts.animate !== false
+        });
+      } catch (e) {
+        try { map.setView(TRIKALA_CENTER, 10); } catch (err) {}
+      }
+    }
 
     // Esri tiles – λειτουργούν offline/file:// χωρίς API key
     const streets = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -1581,7 +1696,7 @@ const OPS_POINTS = [{"name": "Γενικό Νοσοκομείο Τρικάλων
               if (typeof startBlitzortung === 'function') startBlitzortung();
               if (typeof loadRainViewer === 'function') loadRainViewer();
               if (layers.rain && !map.hasLayer(layers.rain)) map.addLayer(layers.rain);
-              map.fitBounds([[39.40, 21.40], [39.90, 22.15]], { padding: [24, 24], maxZoom: 10 });
+              focusTrikala({ maxZoom: 10 });
             } catch (err) {}
           }
           if (id === 'wxfc') {
@@ -1601,7 +1716,7 @@ const OPS_POINTS = [{"name": "Γενικό Νοσοκομείο Τρικάλων
             const ex = document.getElementById('hcmr-layer-extra');
             if (ex) ex.style.display = 'block';
             try {
-              map.fitBounds(L.latLngBounds([[39.40, 21.20], [39.92, 22.65]]), { padding: [40, 40], maxZoom: 11 });
+              focusTrikala({ maxZoom: 10 });
             } catch (err) {}
           }
         } else {
@@ -1665,7 +1780,7 @@ const OPS_POINTS = [{"name": "Γενικό Νοσοκομείο Τρικάλων
       L.geoJSON(TRIKALA_BOUNDARY, {
         style: { color: '#0a0a0a', weight: 2.5, opacity: 1, fill: false, dashArray: null, lineCap: 'round', lineJoin: 'round' }
       }).addTo(layers.boundary);
-      map.fitBounds(layer.getBounds(), { padding: [30, 30] });
+      focusTrikala({ maxZoom: 10 });
     } catch (e) {
       console.error(e);
       L.rectangle([[39.356, 21.12], [39.90, 22.22]], {
@@ -2187,10 +2302,7 @@ const OPS_POINTS = [{"name": "Γενικό Νοσοκομείο Τρικάλων
       const cb = document.getElementById('lyr-fire');
       if (cb && cb.checked) {
         if (!map.hasLayer(layers.fire)) map.addLayer(layers.fire);
-        try {
-          const b = layer.getBounds();
-          if (b && b.isValid()) map.fitBounds(b.pad(0.05), { maxZoom: 9, padding: [30, 30] });
-        } catch (e) {}
+        try { focusTrikala({ maxZoom: 10, animate: false }); } catch (e) {}
       }
       try { updateMapLegend(); } catch (e) {}
       return fc.features.length;
@@ -2277,12 +2389,7 @@ const OPS_POINTS = [{"name": "Γενικό Νοσοκομείο Τρικάλων
         if (!map.hasLayer(layers.fire) && beyondFireState.featureCount > 0) {
           map.addLayer(layers.fire);
         }
-        try {
-          map.fitBounds(L.latLngBounds(
-            [THESSALY_BBOX.minLat, THESSALY_BBOX.minLon],
-            [THESSALY_BBOX.maxLat, THESSALY_BBOX.maxLon]
-          ), { padding: [24, 24], maxZoom: 9 });
-        } catch (err) {}
+        try { focusTrikala({ maxZoom: 10 }); } catch (err) {}
       } else {
         if (map.hasLayer(layers.fire)) map.removeLayer(layers.fire);
       }
@@ -4742,9 +4849,7 @@ const MAJOR_HISTFLOODS_TRIKALA = [{"name": "Μεγάλη πλημμύρα Τρι
     document.getElementById('btn-critical')?.addEventListener('click', function () {
       // κρίσιμα για πλημμύρα / έντονα φαινόμενα
       ['rain', 'wxfc', 'hcmr', 'flood', 'ypeka-risk', 'weather'].forEach(function (id) { setLayer(id, true); });
-      try {
-        map.fitBounds(L.latLngBounds([[39.35, 21.15], [39.92, 22.25]]), { padding: [30, 30], maxZoom: 10 });
-      } catch (e) {}
+      try { focusTrikala({ maxZoom: 10 }); } catch (e) {}
       const st = document.getElementById('wxfc-status');
       if (st) st.textContent = (st.textContent || '') + ' · λειτουργία κρίσιμων ενεργή';
     });
@@ -4761,6 +4866,103 @@ const MAJOR_HISTFLOODS_TRIKALA = [{"name": "Μεγάλη πλημμύρα Τρι
     document.getElementById('btn-export-map')?.addEventListener('click', function () {
       window.print();
     });
+
+    // ========== ΣΤΙΓΜΙΟΤΥΠΟ ΒΑΡΔΙΑΣ (χάρτης + status bar + alerts σε μία σελίδα) ==========
+    (function setupShiftSnapshot() {
+      const MAX_ALERTS = 6;
+      let pageStyle = null;
+
+      function fillSnapshot() {
+        const now = new Date();
+        const tEl = document.getElementById('snap-time');
+        if (tEl) tEl.textContent = 'Δημιουργία: ' + now.toLocaleString('el-GR');
+        const dEl = document.getElementById('snap-data-time');
+        const lu = document.getElementById('last-update');
+        if (dEl) dEl.textContent = lu ? lu.textContent.trim() : '';
+
+        // Ενεργά alerts: αντιγραφή από τη λίστα του sidebar (ίδια δεδομένα, χωρίς νέα αιτήματα)
+        const box = document.getElementById('snap-alerts');
+        if (box) {
+          box.innerHTML = '';
+          const src = document.querySelectorAll('#alerts-list .al-item');
+          const real = Array.prototype.filter.call(src, function (n) { return !n.classList.contains('sev-112'); });
+          const note112 = Array.prototype.filter.call(src, function (n) { return n.classList.contains('sev-112'); })[0];
+          if (!real.length) {
+            const none = document.createElement('div');
+            none.className = 'snap-none';
+            const list = document.getElementById('alerts-list');
+            const txt = list ? list.textContent.trim() : '';
+            none.textContent = (txt && txt.indexOf('Φόρτωση') === 0) ? txt : 'Καμία ενεργή προειδοποίηση Meteoalarm / ΕΜΥ τη στιγμή της δημιουργίας.';
+            box.appendChild(none);
+          } else {
+            real.slice(0, MAX_ALERTS).forEach(function (n) { box.appendChild(n.cloneNode(true)); });
+            if (real.length > MAX_ALERTS) {
+              const more = document.createElement('div');
+              more.className = 'snap-more';
+              more.textContent = '+' + (real.length - MAX_ALERTS) + ' ακόμη ενεργές στο dashboard';
+              box.appendChild(more);
+            }
+          }
+          if (note112) {
+            const c = document.createElement('div');
+            c.className = 'al-item sev-112';
+            c.innerHTML = '<div><b>112 — Επίσημες ειδοποιήσεις</b></div>' +
+              '<div class="al-meta">Έλεγχος: x.com/112Greece · civilprotection.gov.gr/112</div>';
+            box.appendChild(c);
+          }
+        }
+
+        // Ενεργά επίπεδα χάρτη (για να ερμηνεύεται σωστά ο χάρτης στο χαρτί)
+        const lay = document.getElementById('snap-layers');
+        if (lay) {
+          const names = [];
+          document.querySelectorAll('.layer-toggles input[type="checkbox"]:checked').forEach(function (cb) {
+            const lab = cb.closest('label');
+            const s = lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '';
+            if (s) names.push(s);
+          });
+          lay.textContent = names.length ? names.join(' · ') : 'Κανένα επιπλέον επίπεδο.';
+        }
+      }
+
+      function refreshMapSize() {
+        setTimeout(function () { try { map.invalidateSize(); } catch (e) {} }, 80);
+      }
+
+      function enter() {
+        fillSnapshot();
+        if (!pageStyle) {
+          pageStyle = document.createElement('style');
+          pageStyle.id = 'snap-page-style';
+          pageStyle.textContent = '@page { size: A4 landscape; margin: 8mm; }';
+          document.head.appendChild(pageStyle);
+        }
+        document.body.classList.add('snapshot-mode');
+        window.scrollTo(0, 0);
+        refreshMapSize();
+      }
+
+      function exit() {
+        document.body.classList.remove('snapshot-mode');
+        if (pageStyle) { pageStyle.remove(); pageStyle = null; }
+        refreshMapSize();
+      }
+
+      function printNow() {
+        fillSnapshot();
+        try { map.invalidateSize(); } catch (e) {}
+        // μικρή αναμονή ώστε να ολοκληρωθεί η φόρτωση πλακιδίων μετά από pan/zoom
+        setTimeout(function () { window.print(); }, 500);
+      }
+
+      document.getElementById('btn-snapshot')?.addEventListener('click', enter);
+      document.getElementById('snap-exit')?.addEventListener('click', exit);
+      document.getElementById('snap-refresh')?.addEventListener('click', fillSnapshot);
+      document.getElementById('snap-print')?.addEventListener('click', printNow);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.body.classList.contains('snapshot-mode')) exit();
+      });
+    })();
 
     // Layer hints toggle with checkbox
     document.querySelectorAll('.layer-hint[data-for]').forEach(function (hint) {
@@ -5213,6 +5415,17 @@ const MAJOR_HISTFLOODS_TRIKALA = [{"name": "Μεγάλη πλημμύρα Τρι
 
 
     // Sidebar καιρός στην εκκίνηση. Live χάρτης + 12ω μόνο όταν ενεργοποιούνται τα επίπεδα.
+    // Επανακέντρωση στον Ν. Τρικάλων (flex/sidebar μπορεί να μετακινήσει το view στο load)
+    try {
+      map.invalidateSize(true);
+      focusTrikala({ animate: false, maxZoom: 10 });
+      setTimeout(function () {
+        try { map.invalidateSize(true); focusTrikala({ animate: false, maxZoom: 10 }); } catch (e) {}
+      }, 250);
+      setTimeout(function () {
+        try { map.invalidateSize(true); focusTrikala({ animate: false, maxZoom: 10 }); } catch (e) {}
+      }, 800);
+    } catch (e) {}
     loadWeather();
     loadEarthquakes();
     try { loadFrostSnowHint(); } catch (e) {}
